@@ -1,7 +1,6 @@
 with import <nixpkgs> {};
 
 let
-  ahpkgs = anduril.haskell.lts1316;
   haskellDeps = ps: with ps; [
     base
     bytestring
@@ -9,14 +8,15 @@ let
     directory
     filepath
     hinotify
+    lens
     stm
     stylish-haskell
   ];
-  ghc = ahpkgs.ghcWithPackages haskellDeps;
+  ghc = haskellPackages.ghcWithPackages haskellDeps;
   nixPackages = [
     ghc
     pkgs.gdb
-    ahpkgs.cabal-install
+    haskellPackages.cabal-install
   ];
 in
 stdenv.mkDerivation {

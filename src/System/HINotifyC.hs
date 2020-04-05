@@ -1,5 +1,15 @@
 module System.HINotifyC
 (
+  mkINotifyClient
+, destroyINotifyClient
+, readEvent
+, flushEvents
+, tryReadEvent
+, hasEvents
+, peekEvents
+, tryPeekEvents
+, EventStream
+, INotifyClient(..)
 )
 where
 
@@ -17,12 +27,11 @@ data INotifyClient = INotifyClient { inotifyEventStream     :: EventStream
                                    }
 
 -- | Create our INotifyClient
-mkINotifyClient :: FilePath -> IO INotifyClient
-mkINotifyClient fp = do
+mkINotifyClient :: FilePath -> [EventVariety] -> IO INotifyClient
+mkINotifyClient fp ev = do
   i <- initINotify
   es <- atomically newTQueue
-  wd <- addWatch i [Delete, Modify] (C.pack fp) (\e -> do
-                                                   atomically (writeTQueue es e))
+  wd <- addWatch i ev (C.pack fp) (\e -> putEvent es e)
   return (INotifyClient es i wd)
 
 -- | Release resources associated to our client.
@@ -57,3 +66,8 @@ peekEvents c = atomically $ peekTQueue $ inotifyEventStream c
 -- | Attempt to read next event off the queue without removing it.
 tryPeekEvents :: INotifyClient -> IO (Maybe Event)
 tryPeekEvents c = atomically $ tryPeekTQueue $ inotifyEventStream c
+
+-- | Put event in the EventStream.
+-- This should not be expose via C FFI.
+putEvent :: EventStream -> Event -> IO ()
+putEvent c e = atomically (writeTQueue c e)
