@@ -3,11 +3,11 @@ module System.HINotifyC
   mkINotifyClient
 , destroyINotifyClient
 , readEvent
-, flushEvents
 , tryReadEvent
+, flushEvents
 , hasEvents
-, peekEvents
-, tryPeekEvents
+, peekEvent
+, tryPeekEvent
 , EventStream
 , INotifyClient(..)
 )
@@ -45,14 +45,14 @@ destroyINotifyClient c = do
 readEvent :: INotifyClient -> IO Event
 readEvent c = atomically $ readTQueue $ inotifyEventStream c
 
--- | Read all file system events from queue into a list.
-flushEvents :: INotifyClient -> IO [Event]
-flushEvents c = atomically $ flushTQueue $ inotifyEventStream c
-
 -- | Attempt to read an event from the queue returning `Nothing` on failure.
 -- This is not a blocking call.
 tryReadEvent :: INotifyClient -> IO (Maybe Event)
 tryReadEvent c = atomically $ tryReadTQueue $ inotifyEventStream c
+
+-- | Read all file system events from queue into a list.
+flushEvents :: INotifyClient -> IO [Event]
+flushEvents c = atomically $ flushTQueue $ inotifyEventStream c
 
 -- | Whether or not there are any events to be read from the queue.
 -- If this returns true, then the queue contains atleast one element.
@@ -60,12 +60,12 @@ hasEvents :: INotifyClient -> IO Bool
 hasEvents c = atomically $ isEmptyTQueue $ inotifyEventStream c
 
 -- | Get the next event off the queue without removing it.
-peekEvents :: INotifyClient -> IO Event
-peekEvents c = atomically $ peekTQueue $ inotifyEventStream c
+peekEvent :: INotifyClient -> IO Event
+peekEvent c = atomically $ peekTQueue $ inotifyEventStream c
 
 -- | Attempt to read next event off the queue without removing it.
-tryPeekEvents :: INotifyClient -> IO (Maybe Event)
-tryPeekEvents c = atomically $ tryPeekTQueue $ inotifyEventStream c
+tryPeekEvent :: INotifyClient -> IO (Maybe Event)
+tryPeekEvent c = atomically $ tryPeekTQueue $ inotifyEventStream c
 
 -- | Put event in the EventStream.
 -- This should not be expose via C FFI.
