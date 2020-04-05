@@ -1,0 +1,27 @@
+cabal-version:       2.4
+name:                hinotify-c
+version:             0.1.0.0
+synopsis:            C-Bindings for the Haskell INotify Client
+description:         C-Bindings for the Haskell INotify Client
+bug-reports:         https://github.com/SkamDart/hinotify-c
+license:             MIT
+license-file:        LICENSE
+author:              Cameron Dart
+maintainer:          cdart2@illinois.edu
+-- copyright:
+category:            System
+extra-source-files:  CHANGELOG.md
+
+library
+  exposed-modules:     System.INotify
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base ^>=4.12.0.0
+                     , bytestring
+                     , containers
+                     , directory
+                     , filepath
+                     , hinotify
+		     , stm
+  hs-source-dirs:      src
+  default-language:    Haskell2010
